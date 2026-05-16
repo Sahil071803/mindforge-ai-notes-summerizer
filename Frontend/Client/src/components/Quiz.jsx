@@ -47,16 +47,11 @@ export default function Quiz({ quiz = [], timerEnabled = true }) {
 
     try {
       const userData = JSON.parse(localStorage.getItem("user") || "{}");
-      await saveScore({
-        score: s,
-        totalQuestions: quiz.length,
-        name: userData.name || "Anonymous",
-      });
+      await saveScore({ score: s, totalQuestions: quiz.length, name: userData.name || "Anonymous" });
     } catch (err) {
       const detail = err.response?.data?.error || "";
       const msg = err.response?.data?.message || err.message || "Score save failed";
       setSaveError(detail ? `${msg}: ${detail}` : msg);
-      console.error("Score save error detail:", err.response?.data);
     }
   };
 
@@ -65,19 +60,15 @@ export default function Quiz({ quiz = [], timerEnabled = true }) {
   if (submitted) {
     const pct = Math.round((score / quiz.length) * 100);
     return (
-      <Box sx={{ mt: 3, textAlign: "center" }}>
-        {saveError && (
-          <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>{saveError}</Alert>
-        )}
-        <Card sx={{ p: 4, maxWidth: 400, mx: "auto" }}>
-          <Typography variant="h3" fontWeight={800} sx={{ color: pct >= 60 ? "#22c55e" : "#ef4444" }}>
+      <Box sx={{ mt: 2, textAlign: "center" }}>
+        {saveError && <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>{saveError}</Alert>}
+        <Card sx={{ p: { xs: 2, sm: 4 }, maxWidth: 400, mx: "auto" }}>
+          <Typography variant="h3" fontWeight={800} sx={{ color: pct >= 60 ? "#22c55e" : "#ef4444", fontSize: { xs: "2rem", sm: "3rem" } }}>
             {score}/{quiz.length}
           </Typography>
-          <Typography variant="h5" mt={1}>{pct}%</Typography>
-          <Chip
-            label={pct >= 80 ? "Excellent!" : pct >= 60 ? "Good Job!" : "Keep Practicing!"}
-            color={pct >= 60 ? "success" : "error"}
-            sx={{ mt: 2, fontWeight: 600 }}
+          <Typography variant="h5" mt={1} sx={{ fontSize: { xs: "1.1rem", sm: "1.5rem" } }}>{pct}%</Typography>
+          <Chip label={pct >= 80 ? "Excellent!" : pct >= 60 ? "Good Job!" : "Keep Practicing!"}
+            color={pct >= 60 ? "success" : "error"} sx={{ mt: 2, fontWeight: 600 }}
           />
         </Card>
       </Box>
@@ -85,10 +76,10 @@ export default function Quiz({ quiz = [], timerEnabled = true }) {
   }
 
   return (
-    <Box sx={{ mt: 3 }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-        <Typography variant="subtitle2" fontWeight={600}>
-          Question {current + 1} of {quiz.length}
+    <Box sx={{ mt: 2, px: { xs: 0, sm: 0 } }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
+        <Typography variant="subtitle2" fontWeight={600} sx={{ fontSize: { xs: "13px", sm: "14px" } }}>
+          Q{current + 1} of {quiz.length}
         </Typography>
         {timerEnabled ? (
           <Chip label={`${time}s`} size="small" color={time <= 5 ? "error" : "default"} sx={{ fontWeight: 600 }} />
@@ -97,53 +88,43 @@ export default function Quiz({ quiz = [], timerEnabled = true }) {
         )}
       </Box>
 
-      <LinearProgress
-        variant="determinate"
-        value={((current + 1) / quiz.length) * 100}
-        sx={{ height: 6, borderRadius: 3, mb: 3, bgcolor: "divider" }}
+      <LinearProgress variant="determinate" value={((current + 1) / quiz.length) * 100}
+        sx={{ height: 5, borderRadius: 3, mb: 2, bgcolor: "divider" }}
       />
 
       <Card>
-        <CardContent sx={{ p: 3 }}>
-          <Typography variant="h6" fontWeight={600} mb={2}>{currentQ.question}</Typography>
+        <CardContent sx={{ p: { xs: 1.5, sm: 3 } }}>
+          <Typography variant="h6" fontWeight={600} mb={2} sx={{ fontSize: { xs: "0.95rem", sm: "1.1rem" } }}>
+            {currentQ.question}
+          </Typography>
 
           {currentQ.options.map((opt, i) => {
             const isSelected = selected[current] === i;
             return (
-              <Button
-                key={i}
-                fullWidth
-                variant={isSelected ? "contained" : "outlined"}
+              <Button key={i} fullWidth variant={isSelected ? "contained" : "outlined"}
                 onClick={() => select(i)}
                 sx={{
-                  mb: 1,
-                  justifyContent: "flex-start",
-                  py: 1.5,
-                  px: 2,
+                  mb: 1, justifyContent: "flex-start", py: { xs: 1, sm: 1.5 }, px: 2, textAlign: "left",
+                  fontSize: { xs: "13px", sm: "15px" },
                   bgcolor: isSelected ? "#7c3aed" : "transparent",
                   color: isSelected ? "#fff" : "text.primary",
                   borderColor: isSelected ? "#7c3aed" : "divider",
-                  "&:hover": {
-                    bgcolor: isSelected ? "#6d28d9" : "action.hover",
-                  },
+                  "&:hover": { bgcolor: isSelected ? "#6d28d9" : "action.hover" },
                 }}
               >
-                <Box component="span" sx={{ mr: 1, fontWeight: 700, opacity: 0.5 }}>
+                <Box component="span" sx={{ mr: 1, fontWeight: 700, opacity: 0.5, flexShrink: 0 }}>
                   {String.fromCharCode(65 + i)}.
                 </Box>
-                {opt}
+                <Box sx={{ flex: 1 }}>{opt}</Box>
               </Button>
             );
           })}
 
-          <Button
-            variant="contained"
-            onClick={handleNext}
-            fullWidth
+          <Button variant="contained" onClick={handleNext} fullWidth
             disabled={selected[current] === undefined || selected[current] === null}
-            sx={{ mt: 2, py: 1.5, bgcolor: "#7c3aed", "&:hover": { bgcolor: "#6d28d9" } }}
+            sx={{ mt: 1.5, py: { xs: 1, sm: 1.5 }, bgcolor: "#7c3aed", "&:hover": { bgcolor: "#6d28d9" } }}
           >
-            {current === quiz.length - 1 ? "Finish Quiz" : "Next Question"}
+            {current === quiz.length - 1 ? "Finish Quiz" : "Next"}
           </Button>
         </CardContent>
       </Card>

@@ -34,7 +34,7 @@ function Dashboard() {
 
   if (loading) {
     return (
-      <Container sx={{ mt: 8, textAlign: "center" }}>
+      <Container sx={{ display: "flex", justifyContent: "center", py: 8 }}>
         <CircularProgress sx={{ color: "#7c3aed" }} />
       </Container>
     );
@@ -49,7 +49,7 @@ function Dashboard() {
 
   return (
     <Container sx={{ py: 5 }}>
-      <Typography variant="h4" fontWeight={800} mb={4}>
+      <Typography variant="h4" fontWeight={800} mb={{ xs: 2, md: 4 }} sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" } }}>
         Dashboard
       </Typography>
 

@@ -108,14 +108,16 @@ function AppContent() {
         <Tooltip title="Send Feedback" placement="left">
           <Fab
             onClick={() => setFeedbackOpen(true)}
+            size="small"
             sx={{
-              position: "fixed", bottom: 24, right: 24,
+              position: "fixed", bottom: { xs: 16, sm: 24 }, right: { xs: 16, sm: 24 },
+              width: { xs: 48, sm: 56 }, height: { xs: 48, sm: 56 },
               bgcolor: "#7c3aed", color: "#fff",
               "&:hover": { bgcolor: "#6d28d9" },
               boxShadow: "0 4px 20px rgba(124,58,237,0.4)",
             }}
           >
-            <FeedbackIcon />
+            <FeedbackIcon sx={{ fontSize: { xs: 22, sm: 28 } }} />
           </Fab>
         </Tooltip>
       )}
