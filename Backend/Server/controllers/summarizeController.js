@@ -49,29 +49,21 @@ const summarizeText = async (req, res, next) => {
       }
       try {
         transcriptText = await getTranscript(videoId);
-      } catch (err) {
-        const msg = err.message || "";
-        const userMsg = msg.includes("disabled")
-          ? "This video has captions disabled. Try a video that has captions/subtitles enabled."
-          : msg.includes("unavailable")
-          ? "This video is unavailable or private."
-          : "Could not fetch transcript: " + msg;
-        return res.status(400).json({
-          success: false,
-          message: userMsg,
-        });
+      } catch {
+        if (type === "points") {
+          prompt = `Extract key points in bullet form about this YouTube video (based on your knowledge):\n${youtube}`;
+        } else {
+          prompt = `Summarize this YouTube video (based on your knowledge, keep it accurate):\n${youtube}`;
+        }
+        transcriptText = "";
       }
-      if (!transcriptText.trim()) {
-        return res.status(400).json({
-          success: false,
-          message: "No transcript found for this video",
-        });
-      }
-      const truncated = transcriptText.slice(0, 8000);
-      if (type === "points") {
-        prompt = `Extract key points in bullet form from this transcript:\n${truncated}`;
-      } else {
-        prompt = `Summarize this transcript clearly:\n${truncated}`;
+      if (transcriptText.trim()) {
+        const truncated = transcriptText.slice(0, 8000);
+        if (type === "points") {
+          prompt = `Extract key points in bullet form from this transcript:\n${truncated}`;
+        } else {
+          prompt = `Summarize this transcript clearly:\n${truncated}`;
+        }
       }
     } else if (type === "points") {
       prompt = `Extract key points in bullet form:\n${inputText}`;
