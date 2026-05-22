@@ -1,14 +1,32 @@
 const axios = require("axios");
 const History = require("../models/History");
 
+function extractVideoId(url) {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=)([^&]+)/,
+    /(?:youtu\.be\/)([^?]+)/,
+    /(?:youtube\.com\/embed\/)([^?]+)/,
+    /(?:youtube\.com\/shorts\/)([^?]+)/,
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m) return m[1];
+  }
+  return null;
+}
+
+async function getTranscript(videoId) {
+  const { YoutubeTranscript } = await import("youtube-transcript");
+  const segments = await YoutubeTranscript.fetchTranscript(videoId);
+  return segments.map((s) => s.text).join(" ");
+}
+
 const summarizeText = async (req, res, next) => {
   try {
     const { text, youtube, type } = req.body;
 
-    // ✅ Safe input
     const inputText = typeof text === "string" ? text : "";
 
-    // ❌ Validation
     if (!inputText.trim() && !youtube) {
       return res.status(400).json({
         success: false,
@@ -16,18 +34,43 @@ const summarizeText = async (req, res, next) => {
       });
     }
 
-    // 🧠 Prompt logic
     let prompt = "";
+    let transcriptText = "";
 
     if (youtube) {
-      prompt = `Summarize this YouTube video:\n${youtube}`;
+      const videoId = extractVideoId(youtube);
+      if (!videoId) {
+        return res.status(400).json({
+          success: false,
+          error: "Invalid YouTube URL",
+        });
+      }
+      try {
+        transcriptText = await getTranscript(videoId);
+      } catch {
+        return res.status(400).json({
+          success: false,
+          error: "Could not fetch transcript for this video (may not have captions)",
+        });
+      }
+      if (!transcriptText.trim()) {
+        return res.status(400).json({
+          success: false,
+          error: "No transcript found for this video",
+        });
+      }
+      const truncated = transcriptText.slice(0, 8000);
+      if (type === "points") {
+        prompt = `Extract key points in bullet form from this transcript:\n${truncated}`;
+      } else {
+        prompt = `Summarize this transcript clearly:\n${truncated}`;
+      }
     } else if (type === "points") {
       prompt = `Extract key points in bullet form:\n${inputText}`;
     } else {
       prompt = `Summarize this text clearly:\n${inputText}`;
     }
 
-    // 🔥 API Call
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
@@ -44,19 +87,17 @@ const summarizeText = async (req, res, next) => {
       }
     );
 
-    // ✅ Extract summary
     const summary =
       response?.data?.choices?.[0]?.message?.content ||
       "No summary generated";
 
     await History.create({
       userId: req.user,
-      text: inputText,
+      text: youtube || inputText,
       summary,
       type: "summary",
     });
 
-    // ✅ Response
     res.json({
       success: true,
       summary,
