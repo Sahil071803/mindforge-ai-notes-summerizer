@@ -62,7 +62,7 @@ function RegisterForm() {
           </Box>
           <Typography variant="h5" fontWeight={800}>Get Started</Typography>
           <Typography variant="body2" color="text.secondary" mt={0.5}>
-            Create your MindForge account
+            Create your Studius account
           </Typography>
         </Box>
 

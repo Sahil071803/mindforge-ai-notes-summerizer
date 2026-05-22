@@ -19,11 +19,11 @@ function AppContent() {
   const hideNavbar = ["/login", "/register"].includes(location.pathname);
 
   const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem("mindforge-theme") === "dark";
+    return localStorage.getItem("studius-theme") === "dark";
   });
 
   useEffect(() => {
-    localStorage.setItem("mindforge-theme", darkMode ? "dark" : "light");
+    localStorage.setItem("studius-theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
   const theme = useMemo(

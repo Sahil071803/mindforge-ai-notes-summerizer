@@ -64,7 +64,7 @@ function AppHeader({ darkMode, setDarkMode }) {
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
               letterSpacing: "-0.5px",
             }}>
-              MindForge
+              Studius
             </Typography>
           </Box>
 
@@ -131,7 +131,7 @@ function AppHeader({ darkMode, setDarkMode }) {
           }}>
             <AutoStoriesIcon sx={{ fontSize: 18 }} />
           </Box>
-          <Typography fontWeight={800}>MindForge</Typography>
+          <Typography fontWeight={800}>Studius</Typography>
         </Box>
         <Divider />
         <List>

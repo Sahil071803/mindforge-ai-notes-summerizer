@@ -63,7 +63,7 @@ function LoginForm() {
           </Box>
           <Typography variant="h5" fontWeight={800}>Welcome Back</Typography>
           <Typography variant="body2" color="text.secondary" mt={0.5}>
-            Sign in to MindForge
+            Sign in to Studius
           </Typography>
         </Box>
 
